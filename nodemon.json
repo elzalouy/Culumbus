@@ -1,0 +1,8 @@
+{
+    "env": {
+        "MONGO_USER":"ibraamE",
+        "MONGO_PASSWORD":"1907mx1997",
+        "MONGO_DB":"brain",
+        "SECRET_KEY":"SecretCulumbusKey"
+    }
+}
