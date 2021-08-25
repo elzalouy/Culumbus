@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../../models/user');
+const ForgetCodes = require('../../models/forgetCodes');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sid = process.env.TWILIO_CHAT_SERVICE_SID;
@@ -12,6 +13,33 @@ const client = require('twilio')(accountSid, authToken);
 const crypto = require("crypto")
 const axios = require('axios');
 const { nanoid } = require('nanoid')
+const nodemailer = require("nodemailer");
+const forgetCodes = require('../../models/forgetCodes');
+
+// let transporter = nodemailer.createTransport({
+//     host: "smtp.ethereal.email",
+//     port: 587,
+//     secure: false, // true for 465, false for other ports
+//     auth: {
+//       user: "CulumbusTest", // generated ethereal user
+//       pass: "12345678Culumbus", // generated ethereal password
+//     },
+//   });
+let transporter =nodemailer.createTransport('smtps://CulumbusTest%40gmail.com:12345678Culumbus@smtp.gmail.com');
+
+
+// const AppleAuth = require('apple-auth');
+// const appleAuth = new AppleAuth({
+//     client_id: "org.o-project.Culumbus", // eg: my.unique.bundle.id.iMessageClone
+//     team_id: "T2F9Q79X6G", // eg: FWD9Q5VYJ2
+//     key_id: "UU6FWD8K96", // eg: 8L3ZMA7M3V
+//     scope: "name email"
+//   }, './keys/AuthKey_UU6FWD8K96.p8');
+//   appleAuth.accessToken("c3d9b61c82c964edeba98537e3c9b3266.0.szvs.RyMLWarklAFOcwOVjgsccg").then((response)=>{
+//     console.log(response)
+
+//   }).catch(e=>console.log(e))
+
 
 module.exports={
     users: () => {
@@ -37,6 +65,7 @@ module.exports={
                                 name: args.userInput.name,
                                 email: args.userInput.email,
                                 mobileNumber: args.userInput.mobileNumber,
+                                birthdate:args.userInput.birthdate,
                                 password: pass,
                                 chat:null,
                                 chatID:args.userInput.mobileNumber,
@@ -98,7 +127,7 @@ module.exports={
         if(!isEqual){
             throw new Error('Password is incorrect!')
         }
-        const token =  jwt.sign({userId:user._id, mobileNumber:user.mobileNumber}, process.env.SECRET_KEY, {expiresIn:'1h'})
+        const token =  jwt.sign({userId:user._id, mobileNumber:user.mobileNumber}, process.env.SECRET_KEY, {expiresIn:'1y'})
         // const refreshToken = jwt.sign({userId:user._id}, Constant.ACCESS_TOKEN_SECRET, { expiresIn: '1y' });
         return { token:token, user:user}
     },
@@ -110,7 +139,7 @@ module.exports={
             var email = response.data.email;
             return User.findOne({socialID:facebook_id}).then(user=>{
                 if(user){
-                    const token =  jwt.sign({userId:user._id, mobileNumber:user.socialID}, process.env.SECRET_KEY, {expiresIn:'1h'})
+                    const token =  jwt.sign({userId:user._id, mobileNumber:user.socialID}, process.env.SECRET_KEY, {expiresIn:'1y'})
 
                     return { token:token, user:user}
 
@@ -153,6 +182,56 @@ module.exports={
     })
     },
 
+    loginWithApple: args => {
+        return User.findOne({socialID:args.UserInputApple.socialID,socialType:'apple'}).then(user=>{
+            if(user){
+                const token =  jwt.sign({userId:user._id, mobileNumber:user.socialID}, process.env.SECRET_KEY, {expiresIn:'1y'})
+                return { token:token, user:user}
+            }else{
+                return User.findOne({email:args.UserInputApple.email}).then(user=>{
+                    if(!user){
+                if(args.UserInputApple.email){
+                return client.conversations.users
+                .create({identity: args.UserInputApple.socialID,friendlyName:args.UserInputApple.name})
+                .then(newUser => {
+                var password = nanoid(20)
+                const userx = new User({
+                    name: args.UserInputApple.name,
+                    email: args.UserInputApple.email,
+                    // mobileNumber: 'x',
+                    socialID: args.UserInputApple.socialID,
+                    socialType:'apple',
+                    password: password,
+                    chat:null,
+                    chatID:args.UserInputApple.socialID,
+                    role:'user',
+                    startedChat:false
+                })
+                return userx.save().then(result => {
+                    const token =  jwt.sign({userId:result._id, socialID:args.UserInputApple.socialID}, process.env.SECRET_KEY, {expiresIn:'1y'})
+           
+                    return { token:token, user:userx}
+             });
+                
+            })
+        }else{
+            throw new Error("Email should be provided!")
+        }
+    }else{
+        throw new Error("This email is already linked to another account!")
+    }
+    })
+        }
+        
+        })
+        .catch(err=>{
+            console.log(err);
+            throw err;
+        })
+    
+       
+    },
+
     // validateToken: async ({ token }) => {
     //     const user = await User.findOne({ email: email })
     //     if (!user) {
@@ -164,16 +243,80 @@ module.exports={
 
     // },
 
-    // forgetPassword: args=>{
-    //     const user = await User.findOne({ mobileNumber: args.mobileNumber })
-    //     if (!user) {
-    //         throw new Error('User does not exist!')
-    //     }
+    forgetPassword: async (args,req)=>{
 
-        
-    //     return { };
+        const user = await User.findOne({ mobileNumber: args.mobileNumber })
+        if(user){
+      
+            let code= Math.floor(1000 + Math.random() * 9000);
+            const newCode = new ForgetCodes({
+                userId: user._id,
+                code: code,
+                
+            })
+            return newCode.save().then(async (result) => {
+            var mailOptions = {
+                from: '"culumbustest" <culumbustest@gmail.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Reset Password', // Subject line
+                // text: 'Hello world ?',
+                html: `<p>  A password reset was requested for your account and your password reset code is <b>${code}.</b></p>` // html body
+            };
+            
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    throw new Error(error)
+                }
+            });
+            return { message:`Code sent to ${user.email} successfully!`}
 
-    // }
+        }).catch(e=>{throw new Error(e)})
 
-  
+    }else{
+    throw new Error('User does not exist!')
+    }
+
+    },
+    verifyForget : async (args,req)=>{
+        const user = await User.findOne({ mobileNumber: args.mobileNumber})
+        if(user){
+            const code = await ForgetCodes.findOne({ userId: user._id, code: args.code})
+            if(code){
+                return { message:`Code valid!`}
+
+            }else{
+                throw new Error('Invalid code!')
+            }
+    
+    }else{
+    throw new Error('User does not exist!')
+    }
+    },
+
+    resetPassword : async (args,req)=>{
+        const user = await User.findOne({ mobileNumber: args.mobileNumber})
+        if(user){
+            const code = await ForgetCodes.findOne({ userId: user._id, code: args.code})
+            if(code){
+                return bcrypt.hash(args.password,12).then(pass=>{
+                    user.password=pass
+                    return user.save().then(async (result) => {
+               
+                        return { message:`Password reset successfully!`}
+                
+                    }).catch(e=>{throw new Error(e)})
+    
+                }).catch(e=>{throw new Error(e)})
+
+            }else{
+                throw new Error('Invalid code!')
+            }
+    
+    }else{
+    throw new Error('User does not exist!')
+    }
+    
+    
+    }
+    
 }

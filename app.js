@@ -13,9 +13,14 @@ const app = express();
 const cors = require('cors')
 const User = require('./models/user');
 const bcrypt = require('bcryptjs');
+const { nanoid } = require('nanoid')
 
 const AccessToken = Twilio.jwt.AccessToken;
 const ChatGrant = AccessToken.ChatGrant;
+
+let multer = require('multer');
+let upload = multer();
+var fs = require('fs');
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -29,8 +34,11 @@ const ChatGrant = AccessToken.ChatGrant;
 //            .update({friendlyName: 'Ibraam Emad'})
 //            .then(channel => console.log(channel.friendlyName));
 app.use(cors())
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(isAuth);
+app.use('/files', express.static('files')); 
 
 app.use('/graphql',
 graphqlHTTP({
@@ -48,6 +56,7 @@ app.get('/token/:identity', (req, res) => {
     );
   
     token.identity = identity;
+    // console.log(identity)
     token.addGrant(
       new ChatGrant({
         serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
@@ -59,6 +68,32 @@ app.get('/token/:identity', (req, res) => {
       jwt: token.toJwt(),
     });
   });
+
+  app.post('/upload', upload.single('file') , function(req, res) {
+
+    var name = nanoid(20)
+    fs.writeFile("./files/images/"+name+".png", req.file.buffer, function(err) {
+      if (err) console.log(err);
+      });
+      res.send({
+      image_id:name
+    })
+  });
+
+  app.delete('/delete/:image', function(req, res) {
+    try{
+      fs.unlinkSync("./files/images/"+req.params.image+".png")
+      res.status(200).send({
+          message:"image deleted"
+        })
+    }catch(err) {
+      res.status(400).send({
+        error:"image not deleted"
+      })    
+    }
+   
+  });
+
 
 
 mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.hpsit.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`, { useNewUrlParser: true,  useUnifiedTopology: true }) .then(() => {
