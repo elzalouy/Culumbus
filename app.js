@@ -47,6 +47,12 @@ graphqlHTTP({
     graphiql: true
 }))
 
+app.get('/check', (req, res) => {
+  res.status(200).send({
+    check:false
+  })
+});
+
 app.get('/token/:identity', (req, res) => {
     const identity = req.params.identity;
     const token = new AccessToken(
@@ -95,8 +101,8 @@ app.get('/token/:identity', (req, res) => {
   });
 
 
-
-mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crt`, { useNewUrlParser: true,  useUnifiedTopology: true }) .then(() => {
+//&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crt
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`, { useNewUrlParser: true,  useUnifiedTopology: true }) .then(() => {
     console.log("Server running...")
     app.listen(3000);
     //--

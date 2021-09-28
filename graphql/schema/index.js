@@ -32,6 +32,18 @@ buildSchema(`
             role:  String!
             startedChat: Boolean!
         }
+        type ResponseUser {
+            _id: ID!
+            name: String!
+            email: String!
+            socialID: String
+            socialType: String
+            chat:  String
+            chatID:  String!
+            role:  String!
+            startedChat: Boolean!
+            mobileNumber: String
+        }
         type AuthData {
             token: String!
             user: User!
@@ -82,6 +94,26 @@ buildSchema(`
             encoding: String!
             url: String!
         }
+        input dataOrder {
+            type : String!
+            product_identifier : String!
+            quantity: Int
+            language: String!
+        }
+        input customer {
+            firstname: String!
+            lastname: String!
+            email: String!
+        }
+        input userOrder { 
+            customer:customer!
+        }
+
+        input editUserInput {
+            _id: String
+            name: String
+            birthdate: String
+        }
         input UserInput {
             name: String!
             mobileNumber: String!
@@ -120,6 +152,10 @@ buildSchema(`
             images: [String]!
             offer: Int
         }
+        input orderData {
+            order:dataOrder
+            user:userOrder
+        }
         type RootQuery {
             users: [User!]!
             login(mobileNumber: String!, password: String!): AuthData!
@@ -129,6 +165,8 @@ buildSchema(`
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
             register(userInput: UserInput): AuthData
+            editProfile(userInput: editUserInput,_id:String!): ResponseUser
+            deleteAccount(_id: String!):Message
             startChat(mobileNumber: String!): ChatData!
             startChatSocial(socialID: String!): SocialChatData!
             loginWithFacebook(token: String!): SocialAuthData!
@@ -146,6 +184,10 @@ buildSchema(`
             editHotelOffer(offerInput: HotelOffer!,_id:String!):Message
             
             fileUpload(file: Float!): UploadedFileResponse!
+
+            makeOrder(data: orderData!):Message
+
+            
         }
         schema {
             query: RootQuery

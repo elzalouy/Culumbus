@@ -1,17 +1,14 @@
 require('dotenv').config();
-const Twilio = require('twilio');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
 
 const HotelOffers = require('../../models/hotelOffers');
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+
 
 const { nanoid } = require('nanoid')
-const {
-    GraphQLUpload,
-    graphqlUploadExpress, 
-  } = require('graphql-upload');
+// const {
+//     GraphQLUpload,
+//     graphqlUploadExpress, 
+//   } = require('graphql-upload');
 
 module.exports={
     // Upload: GraphQLUpload,
@@ -38,8 +35,9 @@ module.exports={
 
        
     // },
-    createHotelOffer: args => {
-        console.log("create")
+    createHotelOffer: (args,req) => {
+        if(req.isAuth){
+
         return HotelOffers.findOne({name:args.offerInput.name}).then(offer=>{
             if(offer){
                 throw new Error('Hotel offer already added.')
@@ -60,12 +58,16 @@ module.exports={
             console.log(err);
             throw err;
         })
+    }else{
+        throw new Error("Not authenticated!")
+    }
 
        
     },
     
     listHotelOffers: (args,req) => {
-        if(req.isAuth){
+        // console.log(req.isAuth)
+        // if(req.isAuth){
         return HotelOffers.find().then(offers=>{
             if(offers){
                 return offers
@@ -76,12 +78,14 @@ module.exports={
             console.log(err);
             throw err;
         })
-    }else{
-        throw new Error("Not authenticated!")
-    }
+    // }else{
+    //     throw new Error("Not authenticated!")
+    // }
        
     },
-    deleteOffer: (args) => {
+    deleteOffer: (args,req) => {
+        if(req.isAuth){
+
         return HotelOffers.findByIdAndDelete(args._id).then(offer=>{
  
             if(offer){
@@ -98,10 +102,15 @@ module.exports={
             console.log(err);
             throw err;
         })
+    }else{
+        throw new Error("Not authenticated!")
+    }
 
        
     },
-    editHotelOffer: (args) => {
+    editHotelOffer: (args,req) => {
+        if(req.isAuth){
+
         return HotelOffers.findOneAndUpdate({_id:args._id},args.offerInput, {upsert: true}).then(offer=>{
        
             if(offer){
@@ -118,6 +127,9 @@ module.exports={
             console.log(err);
             throw err;
         })
+    }else{
+        throw new Error("Not authenticated!")
+    }
 
        
     },

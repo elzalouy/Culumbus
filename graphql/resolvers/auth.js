@@ -99,6 +99,32 @@ module.exports={
        
     },
 
+    editProfile: args => {
+        return User.findOneAndUpdate({_id:args._id},args.userInput, {upsert: true,new :true}).then(user=>{
+            return user;
+        }).catch(err=>{
+            console.log(err);
+            throw err;
+        })
+    
+       
+    },
+    deleteAccount: args => {
+        return User.findByIdAndDelete(args._id).then(({doc})=>{
+            // return client.conversations.users(user.chat).remove().then(res => {
+            return { message:"Account deleted successfully!"}
+            // }).catch(err=>{
+            //     console.log(err);
+            //     throw err;
+            // })
+        }).catch(err=>{
+            console.log(err);
+            throw err;
+        })
+    
+       
+    },
+
 
 
     createData: args=>{
@@ -168,11 +194,7 @@ module.exports={
                 }) .catch(err=>{
                     console.log(err);
                     throw err;
-                    
-           
-                
-          
-        })
+                })
             }
         }).catch(err=>{
             console.log(err);
