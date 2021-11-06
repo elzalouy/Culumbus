@@ -88,11 +88,30 @@ buildSchema(`
             images: [String]!
             offer: Int
         }
+        type cities {
+            _id: ID!
+            name: String!
+        }
+        type Event {
+            _id: ID!
+            title: String!
+            description: String!
+            images: [String]
+            price: String!
+            duration: String!
+        }
         type UploadedFileResponse {
             filename: String!
             mimetype: String!
             encoding: String!
             url: String!
+        }
+        input EventInput {
+            title: String!
+            description: String!
+            images: [String]
+            price: String!
+            duration: String!
         }
         input dataOrder {
             type : String!
@@ -161,6 +180,8 @@ buildSchema(`
             login(mobileNumber: String!, password: String!): AuthData!
             listCountryRestrictions: [countryRestriction]!
             listHotelOffers: [hotelOffers]
+            listCities: [cities]
+            listEvents: [Event]
         }
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
@@ -182,6 +203,14 @@ buildSchema(`
             createHotelOffer(offerInput: HotelOffer!): Message
             deleteOffer(_id: String!):Message
             editHotelOffer(offerInput: HotelOffer!,_id:String!):Message
+
+            createCity(name: String!): Message
+            deleteCity(_id: String!):Message
+            editCity(name: String!,_id:String!):Message
+
+            createEvent(eventInput: EventInput!): Message
+            deleteEvent(_id: String!):Message
+            editEvent(eventInput: EventInput!,_id:String!):Message
             
             fileUpload(file: Float!): UploadedFileResponse!
 
