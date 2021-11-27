@@ -1,8 +1,7 @@
-const { buildSchema } = require('graphql');
-const { ApolloServer, gql } = require('apollo-server');
+const { buildSchema } = require("graphql");
+const { ApolloServer, gql } = require("apollo-server");
 
-module.exports =
-buildSchema(`
+module.exports = buildSchema(`
         input Pcr{
             value:Boolean!
             label:String
@@ -91,6 +90,8 @@ buildSchema(`
         type cities {
             _id: ID!
             name: String!
+            images: [String]
+
         }
         type Event {
             _id: ID!
@@ -99,6 +100,8 @@ buildSchema(`
             images: [String]
             price: String!
             duration: String!
+            city: cities
+
         }
         type UploadedFileResponse {
             filename: String!
@@ -112,6 +115,11 @@ buildSchema(`
             images: [String]
             price: String!
             duration: String!
+            city: String!
+        }
+        input citiesInput {
+            name: String!
+            images: [String]
         }
         input dataOrder {
             type : String!
@@ -204,7 +212,7 @@ buildSchema(`
             deleteOffer(_id: String!):Message
             editHotelOffer(offerInput: HotelOffer!,_id:String!):Message
 
-            createCity(name: String!): Message
+            createCity(name: String!, images: [String]): Message
             deleteCity(_id: String!):Message
             editCity(name: String!,_id:String!):Message
 
@@ -222,4 +230,4 @@ buildSchema(`
             query: RootQuery
             mutation: RootMutation
         }
-        `)
+        `);
