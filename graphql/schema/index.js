@@ -214,7 +214,7 @@ module.exports = buildSchema(`
 
             createCity(name: String!, images: [String]): Message
             deleteCity(_id: String!):Message
-            editCity(name: String!,_id:String!):Message
+            editCity(name: String!,_id:String!,images: [String]):Message
 
             createEvent(eventInput: EventInput!): Message
             deleteEvent(_id: String!):Message
