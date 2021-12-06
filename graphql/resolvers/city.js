@@ -35,7 +35,6 @@ module.exports = {
     // if(req.isAuth){
     return City.find()
       .then((cities) => {
-        console.log(cities);
         if (cities) {
           return cities;
         } else {
@@ -72,7 +71,7 @@ module.exports = {
     if (req.isAuth) {
       return City.findOneAndUpdate(
         { _id: args._id },
-        { name: args.name },
+        { name: args.name, images: args.images },
         { upsert: true }
       )
         .then((city) => {
