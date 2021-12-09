@@ -79,6 +79,7 @@ module.exports = buildSchema(`
             touristicPlaces: String!
             publicTransport: String!
             visaApplying: String!
+            date:String
         }
         type hotelOffers {
             _id: ID!
@@ -169,6 +170,7 @@ module.exports = buildSchema(`
             touristicPlaces: String!
             publicTransport: String!
             visaApplying: String!
+            date: String
         }
         input DataInput {
             message_id: [String]!
