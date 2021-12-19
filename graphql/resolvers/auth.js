@@ -25,9 +25,16 @@ const forgetCodes = require('../../models/forgetCodes');
 //       pass: "12345678Culumbus", // generated ethereal password
 //     },
 //   });
-let transporter =nodemailer.createTransport('smtps://CulumbusTest%40gmail.com:12345678Culumbus@smtp.gmail.com');
+//let transporter =nodemailer.createTransport('smtps://CulumbusTest@gmail.com:12345678Culumbus@smtp.gmail.com');
 
 
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "CulumbusApp@gmail.com",
+      pass: "o#123456789",
+    },
+  });
 // const AppleAuth = require('apple-auth');
 // const appleAuth = new AppleAuth({
 //     client_id: "org.o-project.Culumbus", // eg: my.unique.bundle.id.iMessageClone
@@ -53,7 +60,7 @@ module.exports={
             });
     },
     register: args => {
-        return User.findOne({mobileNumber:args.userInput.mobileNumber}).then(user=>{
+        return User.findOne({mobileNumber:args.userInput.mobileNumber,email: args.userInput.email}).then(user=>{
             if(user){
                 throw new Error('User already exists.')
             }else{
