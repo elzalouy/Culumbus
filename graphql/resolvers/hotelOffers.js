@@ -68,7 +68,9 @@ module.exports={
     listHotelOffers: (args,req) => {
         // console.log(req.isAuth)
         // if(req.isAuth){
+            console.log('here')
         return HotelOffers.find().then(offers=>{
+            console.log(offers)
             if(offers){
                 return offers
             }else{
