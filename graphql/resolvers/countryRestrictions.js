@@ -13,11 +13,13 @@ const { nanoid } = require("nanoid");
 
 module.exports = {
   createCountryRestriction: (args) => {
+    console.log(args)
     return CountryRestrictions.findOne({
       country: args.restrictionInput.country,
     })
       .then((country) => {
         if (country) {
+          console.log(country)
           throw new Error("Country restrictions already added.");
         } else {
           const countryRestriction = new CountryRestrictions(
@@ -44,7 +46,7 @@ module.exports = {
     return CountryRestrictions.find()
       .then((countries) => {
         if (countries) {
-          console.log(countries);
+          // console.log(countries);
           return countries;
         } else {
           return [];

@@ -39,6 +39,10 @@ const countryRestrictionsSchema = new Schema({
     type: String,
     required: true,
   },
+  remarks: {
+    type: String,
+    required: false,
+  },
   travelBetweenRegions: {
     type: Boolean,
     required: false,

@@ -107,6 +107,7 @@ module.exports={
     },
 
     editProfile: args => {
+        console.log(args, 'update')
         return User.findOneAndUpdate({_id:args._id},args.userInput, {upsert: true,new :true}).then(user=>{
             return user;
         }).catch(err=>{
@@ -153,6 +154,7 @@ module.exports={
 
     login: async ({ mobileNumber, password }) => {
         const user = await User.findOne({ mobileNumber: mobileNumber })
+        console.log(user, 'loggedin user')
         if (!user) {
             throw new Error('User does not exist!')
         }

@@ -19,6 +19,8 @@ module.exports = buildSchema(`
             chatID:  String!
             role:  String!
             startedChat: Boolean!
+            birthdate: String
+            
         }
         type SocialUser {
             _id: ID!
@@ -42,6 +44,7 @@ module.exports = buildSchema(`
             role:  String!
             startedChat: Boolean!
             mobileNumber: String
+            birthdate: String
         }
         type AuthData {
             token: String!
@@ -80,6 +83,7 @@ module.exports = buildSchema(`
             publicTransport: String!
             visaApplying: String!
             date:String
+            remarks:String
         }
         type hotelOffers {
             _id: ID!
@@ -171,6 +175,7 @@ module.exports = buildSchema(`
             publicTransport: String!
             visaApplying: String!
             date: String
+            remarks:String
         }
         input DataInput {
             message_id: [String]!
