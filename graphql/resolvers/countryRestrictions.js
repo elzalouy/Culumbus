@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const CountryRestrictions = require("../../models/countryRestrictions");
+const GlobalFields = require("../../models/GlobalFields");
+
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sid = process.env.TWILIO_CHAT_SERVICE_SID;
@@ -42,6 +44,27 @@ module.exports = {
       });
   },
 
+
+  createGlobalField: async(args) => {
+    console.log(args)
+  //  await GlobalFields.deleteMany({});
+
+    const field = new GlobalFields(
+      args.globalFieldInput
+    );
+    return field
+      .save()
+      .then((result) => {
+        console.log(result)
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
+
+
   listCountryRestrictions: () => {
     return CountryRestrictions.find()
       .then((countries) => {
@@ -57,6 +80,25 @@ module.exports = {
         throw err;
       });
   },
+
+
+  listGlobalFields: () => {
+    return GlobalFields.find()
+      .then((fields) => {
+        if (fields) {
+          // console.log(countries);
+          return fields;
+        } else {
+          return [];
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
+
+
   editCountryRestrictions: () => {
     return CountryRestrictions.findById()
       .then((countries) => {
@@ -86,7 +128,8 @@ module.exports = {
       });
   },
   editRestriction: async (args) => {
-    return CountryRestrictions.findOneAndUpdate(
+    console.log(args)
+    return GlobalFields.findOneAndUpdate(
       { _id: args._id },
       args.restrictionInput,
       { upsert: true }
@@ -96,6 +139,25 @@ module.exports = {
           return { message: "Restriction Updated successfully!" };
         } else {
           throw new Error("Restriction not found!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
+  editGlobalField: async (args) => {
+    console.log(args)
+    return GlobalFields.findOneAndUpdate(
+      { _id: args._id },
+      args.globalFieldInput,
+      { upsert: true }
+    )
+      .then((field) => {
+        if (field) {
+          return { message: "field Updated successfully!" };
+        } else {
+          throw new Error("field not found!");
         }
       })
       .catch((err) => {

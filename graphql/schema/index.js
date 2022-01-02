@@ -67,6 +67,10 @@ module.exports = buildSchema(`
         type Message {
             message: String!
         }
+        type globalFields {
+            _id : ID!
+            LastUpdatedAt: String
+        }
         type countryRestriction {
             _id: ID!
             country: String!
@@ -160,6 +164,9 @@ module.exports = buildSchema(`
             socialType: String!
             identityToken: String!
         }
+        input GlobalFieldInput{
+            LastUpdatedAt: String
+        }
         input RestrictionInput {
             country: String!
             openForEgyptians: Boolean!
@@ -197,6 +204,8 @@ module.exports = buildSchema(`
             listHotelOffers: [hotelOffers]
             listCities: [cities]
             listEvents: [Event]
+            listGlobalFields: [globalFields]
+
         }
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
@@ -212,8 +221,11 @@ module.exports = buildSchema(`
             resetPassword(mobileNumber: String!, code: String!, password: String!): Message
 
             createCountryRestriction(restrictionInput: RestrictionInput): countryRestriction
+            createGlobalField(globalFieldInput: GlobalFieldInput): globalFields
+
             deleteRestriction(_id: String!):Message
             editRestriction(restrictionInput: RestrictionInput!,_id:String!):Message
+            editGlobalField(_id:String!,globalFieldInput: GlobalFieldInput):Message
 
             createHotelOffer(offerInput: HotelOffer!): Message
             deleteOffer(_id: String!):Message
