@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const CountryRestrictions = require("../../models/countryRestrictions");
-const GlobalFields = require("../../models/GlobalFields");
+const GlobalFields = require("../../models/globalFields");
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
