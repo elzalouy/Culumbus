@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const CountryRestrictions = require("../../models/countryRestrictions");
-//const GlobalFields = require("../../models/GlobalFields");
+const GlobalFields = require("../../models/GlobalFields");
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -46,24 +46,24 @@ module.exports = {
   },
 
 
-  // createGlobalField: async(args) => {
-  //   console.log(args)
-  // //  await GlobalFields.deleteMany({});
+  createGlobalField: async(args) => {
+    console.log(args)
+  //  await GlobalFields.deleteMany({});
 
-  //   const field = new GlobalFields(
-  //     args.globalFieldInput
-  //   );
-  //   return field
-  //     .save()
-  //     .then((result) => {
-  //       console.log(result)
-  //       return result;
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       throw err;
-  //     });
-  // },
+    const field = new GlobalFields(
+      args.globalFieldInput
+    );
+    return field
+      .save()
+      .then((result) => {
+        console.log(result)
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
 
 
   listCountryRestrictions: () => {
@@ -83,21 +83,21 @@ module.exports = {
   },
 
 
-  // listGlobalFields: () => {
-  //   return GlobalFields.find()
-  //     .then((fields) => {
-  //       if (fields) {
-  //         // console.log(countries);
-  //         return fields;
-  //       } else {
-  //         return [];
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       throw err;
-  //     });
-  // },
+  listGlobalFields: () => {
+    return GlobalFields.find()
+      .then((fields) => {
+        if (fields) {
+          // console.log(countries);
+          return fields;
+        } else {
+          return [];
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
 
 
   editCountryRestrictions: () => {
@@ -147,23 +147,23 @@ module.exports = {
         throw err;
       });
   },
-  // editGlobalField: async (args) => {
-  //   console.log(args)
-  //   return GlobalFields.findOneAndUpdate(
-  //     { _id: args._id },
-  //     args.globalFieldInput,
-  //     { upsert: true }
-  //   )
-  //     .then((field) => {
-  //       if (field) {
-  //         return { message: "field Updated successfully!" };
-  //       } else {
-  //         throw new Error("field not found!");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       throw err;
-  //     });
-  // },
+  editGlobalField: async (args) => {
+    console.log(args)
+    return GlobalFields.findOneAndUpdate(
+      { _id: args._id },
+      args.globalFieldInput,
+      { upsert: true }
+    )
+      .then((field) => {
+        if (field) {
+          return { message: "field Updated successfully!" };
+        } else {
+          throw new Error("field not found!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        throw err;
+      });
+  },
 };
