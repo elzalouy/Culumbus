@@ -118,6 +118,17 @@ module.exports = buildSchema(`
             encoding: String!
             url: String!
         }
+        type Notification {
+            result : Boolean!
+        }
+        type ChannelReponse {
+            user : [channelUserResponse]
+            channelSid:String
+        }
+        type channelUserResponse {
+            FCM : String
+            id : String
+        }
         input EventInput {
             title: String!
             description: String!
@@ -141,10 +152,9 @@ module.exports = buildSchema(`
             lastname: String!
             email: String!
         }
-        input userOrder { 
+        input userOrder {
             customer:customer!
         }
-
         input editUserInput {
             _id: String
             name: String
@@ -197,6 +207,12 @@ module.exports = buildSchema(`
             order:dataOrder
             user:userOrder
         }
+      
+        input channelUser {
+            FCM : String
+            id : String
+        }
+
         type RootQuery {
             users: [User!]!
             login(mobileNumber: String!, password: String!): AuthData!
@@ -205,7 +221,7 @@ module.exports = buildSchema(`
             listCities: [cities]
             listEvents: [Event]
             listGlobalFields: [globalFields]
-
+            getChannel(channelSid:String): ChannelReponse
         }
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
@@ -242,11 +258,11 @@ module.exports = buildSchema(`
             fileUpload(file: Float!): UploadedFileResponse!
 
             makeOrder(data: orderData!):Message
-
-            
+            setNotification(channelSid:String!, userId:String!,text:String!,imageUrl:String!,title:String!):Notification
+            setChannel(channelSid:String!,user:channelUser!, FCM:String!) : ChannelReponse
         }
         schema {
             query: RootQuery
             mutation: RootMutation
         }
-        `);
+`);

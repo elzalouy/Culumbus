@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const { graphqlHTTP } = require("express-graphql");
 
 const mongoose = require("mongoose");
-
+const morgan = require("morgan");
 const schema = require("./graphql/schema/index");
 const resolvers = require("./graphql/resolvers/index");
 const isAuth = require("./middleware/is-auth");
@@ -17,10 +17,12 @@ const { nanoid } = require("nanoid");
 
 const AccessToken = Twilio.jwt.AccessToken;
 const ChatGrant = AccessToken.ChatGrant;
-
 let multer = require("multer");
 let upload = multer();
 var fs = require("fs");
+// const InitializePushNotificaitonTwilio = require("./services/Twilio");
+const Route = require("./startup/Config/Route");
+const FCM = require("./services/FCM");
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -35,10 +37,12 @@ var fs = require("fs");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+FCM.initialize();
+Route(app);
+// InitializePushNotificaitonTwilio(app);
+app.use(morgan("tiny"));
 app.use(isAuth);
 app.use("/files", express.static("files"));
-
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -67,9 +71,9 @@ app.get("/token/:identity", (req, res) => {
   token.addGrant(
     new ChatGrant({
       serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
+      pushCredentialSid: process.env.FCM_CREDENTIALS_SID,
     })
   );
-
   res.send({
     identity: token.identity,
     jwt: token.toJwt(),
@@ -103,15 +107,16 @@ app.delete("/delete/:image", function (req, res) {
   }
 });
 
-//&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crt
+//&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crtc
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+    // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+    "mongodb://localhost:27017/culumbus",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
     console.log("Server running...");
-    app.listen(8080);
+    app.listen(3000);
     //--
     User.findOne({ mobileNumber: "AdminCulumbus" })
       .then((user) => {
