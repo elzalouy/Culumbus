@@ -1,8 +1,9 @@
-module.exports = async (req, res, next) => {
-  const client = require("twilio")(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
+const client = require("twilio")(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+module.exports = async () => {
+  
   // let response = await client.chat.credentials
   //   .create({
   //     apiKey: process.env.TWILIO_API_KEY,
@@ -20,5 +21,4 @@ module.exports = async (req, res, next) => {
         "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}",
     })
     .then((service) => console.log("service", service));
-  next;
 };

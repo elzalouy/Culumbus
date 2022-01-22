@@ -143,26 +143,28 @@ module.exports = {
         throw err;
       });
   },
-  setNotification: async (args) => {
-    try {
-      let channel = await channels.findOne({ channelSid: args.channelSid });
-      if (channel) {
-        let user = channel.user.find((item) => item.id === args.userId);
-        let result = await admin.messaging().sendMulticast({
-          notification: {
-            title: args.title,
-            body: args.text,
-            imageUrl: args.imageUrl,
-          },
-          tokens: [user.FCM],
-        });
-        return { result: result ? true : false };
-      } else {
-        throw new Error("channel not found");
+  setNotification: (args) => {
+    return async () => {
+      try {
+        let channel = await channels.findOne({ channelSid: args.channelSid });
+        if (channel) {
+          let user = channel.user.find((item) => item.id === args.userId);
+          let result = await admin.messaging().sendMulticast({
+            notification: {
+              title: args.title,
+              body: args.text,
+              imageUrl: args.imageUrl,
+            },
+            tokens: [user.FCM],
+          });
+          return { result: result ? true : false };
+        } else {
+          throw new Error("channel not found");
+        }
+      } catch (error) {
+        console.log(error);
+        return { result: false };
       }
-    } catch (error) {
-      console.log(error);
-      return { result: false };
-    }
+    };
   },
 };

@@ -19,8 +19,7 @@ module.exports = buildSchema(`
             chatID:  String!
             role:  String!
             startedChat: Boolean!
-            birthdate: String
-            
+            birthdate: String   
         }
         type SocialUser {
             _id: ID!

@@ -60,6 +60,7 @@ module.exports = {
       });
   },
   register: (args) => {
+    console.log("hiii");
     return User.findOne({
       mobileNumber: args.userInput.mobileNumber,
       email: args.userInput.email,
@@ -71,8 +72,10 @@ module.exports = {
           return bcrypt
             .hash(args.userInput.password, 12)
             .then((pass) => {
-              return client.conversations.users
-                .create({
+              console.log("service" + client.conversations.services);
+              return client.chat
+                .services(process.env.TWILIO_CHAT_SERVICE_SID)
+                .users.create({
                   identity: args.userInput.mobileNumber,
                   friendlyName: args.userInput.name,
                 })

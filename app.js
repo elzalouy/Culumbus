@@ -20,7 +20,7 @@ const ChatGrant = AccessToken.ChatGrant;
 let multer = require("multer");
 let upload = multer();
 var fs = require("fs");
-// const InitializePushNotificaitonTwilio = require("./services/Twilio");
+const InitializePushNotificaitonTwilio = require("./services/Twilio");
 const Route = require("./startup/Config/Route");
 const FCM = require("./services/FCM");
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -37,9 +37,9 @@ const FCM = require("./services/FCM");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+InitializePushNotificaitonTwilio(app);
 FCM.initialize();
 Route(app);
-// InitializePushNotificaitonTwilio(app);
 app.use(morgan("tiny"));
 app.use(isAuth);
 app.use("/files", express.static("files"));
@@ -59,6 +59,7 @@ app.get("/check", (req, res) => {
 });
 
 app.get("/token/:identity", (req, res) => {
+  console.log("started");
   const identity = req.params.identity;
   const token = new AccessToken(
     process.env.TWILIO_ACCOUNT_SID,
@@ -67,7 +68,7 @@ app.get("/token/:identity", (req, res) => {
   );
 
   token.identity = identity;
-  // console.log(identity)
+  console.log("identity", identity);
   token.addGrant(
     new ChatGrant({
       serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
@@ -110,8 +111,8 @@ app.delete("/delete/:image", function (req, res) {
 //&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crtc
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
-    // "mongodb://localhost:27017/culumbus",
+    // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+    "mongodb://localhost:27017/culumbusNew",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
