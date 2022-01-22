@@ -51,6 +51,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Data",
   },
+  FCM: { type: String, required: true },
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -157,7 +157,6 @@ module.exports = buildSchema(`
             email: String!
             password: String!
             birthdate: String
-            FCM:String
         }
         input UserInputApple {
             name: String
@@ -165,7 +164,6 @@ module.exports = buildSchema(`
             socialID: String!
             socialType: String!
             identityToken: String!
-            FCM:String
         }
         input GlobalFieldInput{
             LastUpdatedAt: String
@@ -209,6 +207,7 @@ module.exports = buildSchema(`
             listCities: [cities]
             listEvents: [Event]
             listGlobalFields: [globalFields]
+            checkAdminFcm: Notification
         }
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
@@ -245,7 +244,10 @@ module.exports = buildSchema(`
             fileUpload(file: Float!): UploadedFileResponse!
 
             makeOrder(data: orderData!):Message
-            setNotification(text:String!,imageUrl:String!,title:String!):Notification
+            setNotification(text:String!,imageUrl:String!,title:String!,mobileNumber:String!):Notification
+            setAdminNotification(text:String!,imageUrl:String!,title:String!):Notification
+            setAdminFcm(FCM:String) : Notification
+            setUserFcm(FCM:String,mobileNumber:String): Notification
         }
         schema {
             query: RootQuery

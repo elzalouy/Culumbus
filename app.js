@@ -132,6 +132,7 @@ mongoose
                 chatID: "AdminCulumbus",
                 role: "admin",
                 startedChat: true,
+                FCM: "0",
               });
               return user.save();
             })

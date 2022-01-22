@@ -90,6 +90,7 @@ module.exports = {
                     chatID: args.userInput.mobileNumber,
                     role: "user",
                     startedChat: false,
+                    FCM: args.userInput.FCM,
                   });
                   return user.save().then((result) => {
                     const token = jwt.sign(
@@ -408,6 +409,37 @@ module.exports = {
       }
     } else {
       throw new Error("User does not exist!");
+    }
+  },
+  checkAdminFcm: async () => {
+    const admin = await User.findOne({
+      email: "AdminCulumbus@gmail.com",
+      mobileNumber: "AdminCulumbus",
+    });
+    if (admin) {
+      if (admin.FCM === "0") throw new Error("Admin FCM is null");
+      else return { result: true };
+    }
+  },
+  setAdminFcm: async (args) => {
+    const admin = await User.findOne({
+      email: "AdminCulumbus@gmail.com",
+      mobileNumber: "AdminCulumbus",
+    });
+    if (admin) {
+      admin.FCM = args.FCM;
+      await admin.save();
+      return { result: true };
+    }
+  },
+  setUserFcm: async (args) => {
+    const user = await User.findOne({
+      mobileNumber: args.mobileNumber,
+    });
+    if (user) {
+      user.FCM = args.FCM;
+      await user.save();
+      return { result: true };
     }
   },
 };

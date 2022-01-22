@@ -7,6 +7,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sid = process.env.TWILIO_CHAT_SERVICE_SID;
 const client = require("twilio")(accountSid, authToken);
 const admin = require("firebase-admin");
+const user = require("../../models/user");
 module.exports = {
   deleteMessage: async (args) => {
     // console.log(args)
@@ -142,28 +143,46 @@ module.exports = {
         throw err;
       });
   },
-  setNotification: (args) => {
-    return async () => {
-      try {
-        let channel = await channels.findOne({ channelSid: args.channelSid });
-        if (channel) {
-          let user = channel.user.find((item) => item.id === args.userId);
-          let result = await admin.messaging().sendMulticast({
-            notification: {
-              title: args.title,
-              body: args.text,
-              imageUrl: args.imageUrl,
-            },
-            tokens: [user.FCM],
-          });
-          return { result: result ? true : false };
-        } else {
-          throw new Error("channel not found");
-        }
-      } catch (error) {
-        console.log(error);
-        return { result: false };
+  setNotification: async (args) => {
+    try {
+      const User = await user.findOne({ mobileNumber: args.mobileNumber });
+      if (User) {
+        let result = await admin.messaging().sendMulticast({
+          notification: {
+            title: args.title,
+            body: args.text,
+          },
+          tokens: [User.FCM],
+        });
+        return { result: result ? true : false };
+      } else {
+        throw new Error("channel not found");
       }
-    };
+    } catch (error) {
+      console.log(error);
+      return { result: false };
+    }
+  },
+  setAdminNotification: async (args) => {
+    try {
+      const User = await user.findOne({
+        mobileNumber: "AdminCulumbus",
+      });
+      if (User) {
+        let result = await admin.messaging().sendMulticast({
+          notification: {
+            title: args.title,
+            body: args.text,
+          },
+          tokens: [User.FCM],
+        });
+        return { result: result ? true : false };
+      } else {
+        throw new Error("channel not found");
+      }
+    } catch (error) {
+      console.log(error);
+      return { result: false };
+    }
   },
 };
