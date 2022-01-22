@@ -120,14 +120,6 @@ module.exports = buildSchema(`
         type Notification {
             result : Boolean!
         }
-        type ChannelReponse {
-            user : [channelUserResponse]
-            channelSid:String
-        }
-        type channelUserResponse {
-            FCM : String
-            id : String
-        }
         input EventInput {
             title: String!
             description: String!
@@ -165,6 +157,7 @@ module.exports = buildSchema(`
             email: String!
             password: String!
             birthdate: String
+            FCM:String
         }
         input UserInputApple {
             name: String
@@ -172,6 +165,7 @@ module.exports = buildSchema(`
             socialID: String!
             socialType: String!
             identityToken: String!
+            FCM:String
         }
         input GlobalFieldInput{
             LastUpdatedAt: String
@@ -206,11 +200,6 @@ module.exports = buildSchema(`
             order:dataOrder
             user:userOrder
         }
-      
-        input channelUser {
-            FCM : String
-            id : String
-        }
 
         type RootQuery {
             users: [User!]!
@@ -220,7 +209,6 @@ module.exports = buildSchema(`
             listCities: [cities]
             listEvents: [Event]
             listGlobalFields: [globalFields]
-            getChannel(channelSid:String): ChannelReponse
         }
         type RootMutation {
             deleteMessage(message_id: String!,chat: String!): Message
@@ -257,8 +245,7 @@ module.exports = buildSchema(`
             fileUpload(file: Float!): UploadedFileResponse!
 
             makeOrder(data: orderData!):Message
-            setNotification(channelSid:String!, userId:String!,text:String!,imageUrl:String!,title:String!):Notification
-            setChannel(channelSid:String!,user:channelUser!, FCM:String!) : ChannelReponse
+            setNotification(text:String!,imageUrl:String!,title:String!):Notification
         }
         schema {
             query: RootQuery

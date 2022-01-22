@@ -15,7 +15,6 @@ const axios = require("axios");
 const { nanoid } = require("nanoid");
 const nodemailer = require("nodemailer");
 const forgetCodes = require("../../models/forgetCodes");
-const channels = require("../../models/channels");
 
 // let transporter = nodemailer.createTransport({
 //     host: "smtp.ethereal.email",
@@ -67,6 +66,7 @@ module.exports = {
     })
       .then((user) => {
         if (user) {
+          console.log(user);
           throw new Error("User already exists.");
         } else {
           return bcrypt
@@ -272,6 +272,8 @@ module.exports = {
                       friendlyName: args.UserInputApple.name,
                     })
                     .then((newUser) => {
+                      newUser.isNotifiable = true;
+                      newUser.update();
                       var password = nanoid(20);
                       const userx = new User({
                         name: args.UserInputApple.name,
@@ -406,24 +408,6 @@ module.exports = {
       }
     } else {
       throw new Error("User does not exist!");
-    }
-  },
-  setChannel: async (args) => {
-    let user = await User.findOne({ mobileNumber: "AdminCulumbus" });
-    let channel = new channels({
-      user: [args.user, { id: user._id, FCM: args.FCM }],
-      channelSid: args.channelSid,
-    });
-    channel = await channel.save();
-    return { channel: channel };
-  },
-  getChannel: async (args) => {
-    try {
-      let channel = await channels.findOne({ channelSid: args.channelSid });
-      if (channel) return channel;
-      else throw new Error("channel not found");
-    } catch (err) {
-      throw new Error("channel not found");
     }
   },
 };

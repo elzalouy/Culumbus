@@ -7,7 +7,6 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sid = process.env.TWILIO_CHAT_SERVICE_SID;
 const client = require("twilio")(accountSid, authToken);
 const admin = require("firebase-admin");
-const channels = require("../../models/channels");
 module.exports = {
   deleteMessage: async (args) => {
     // console.log(args)
@@ -37,7 +36,7 @@ module.exports = {
     return User.findOne({ mobileNumber: args.mobileNumber })
       .then((user) => {
         if (user && !user.startedChat) {
-          return client.conversations.services
+          return client.conversations.conversations
             .create({
               chatServiceSid: sid,
               friendlyName: user.name,
