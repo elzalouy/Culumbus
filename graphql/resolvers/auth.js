@@ -265,8 +265,9 @@ module.exports = {
             (user) => {
               if (!user) {
                 if (args.UserInputApple.email) {
-                  return client.conversations.users
-                    .create({
+                  return client.chat
+                    .services(process.env.TWILIO_CHAT_SERVICE_SID)
+                    .users.create({
                       identity: args.UserInputApple.socialID,
                       friendlyName: args.UserInputApple.name,
                     })
