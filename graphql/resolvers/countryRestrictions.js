@@ -5,24 +5,23 @@ const jwt = require("jsonwebtoken");
 
 const CountryRestrictions = require("../../models/countryRestrictions");
 const GlobalFields = require("../../models/globalFields");
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const sid = process.env.TWILIO_CHAT_SERVICE_SID;
+const config = require("config");
+const accountSid = config.get("TWILIO_ACCOUNT_SID");
+const authToken = config.get("TWILIO_AUTH_TOKEN");
+const sid = config.get("TWILIO_CHAT_SERVICE_SID");
 const client = require("twilio")(accountSid, authToken);
-
 
 const { nanoid } = require("nanoid");
 
 module.exports = {
   createCountryRestriction: (args) => {
-    console.log(args)
+    console.log(args);
     return CountryRestrictions.findOne({
       country: args.restrictionInput.country,
     })
       .then((country) => {
         if (country) {
-          console.log(country)
+          console.log(country);
           throw new Error("Country restrictions already added.");
         } else {
           const countryRestriction = new CountryRestrictions(
@@ -45,18 +44,15 @@ module.exports = {
       });
   },
 
+  createGlobalField: async (args) => {
+    console.log(args);
+    //  await GlobalFields.deleteMany({});
 
-  createGlobalField: async(args) => {
-    console.log(args)
-  //  await GlobalFields.deleteMany({});
-
-    const field = new GlobalFields(
-      args.globalFieldInput
-    );
+    const field = new GlobalFields(args.globalFieldInput);
     return field
       .save()
       .then((result) => {
-        console.log(result)
+        console.log(result);
         return result;
       })
       .catch((err) => {
@@ -64,7 +60,6 @@ module.exports = {
         throw err;
       });
   },
-
 
   listCountryRestrictions: () => {
     return CountryRestrictions.find()
@@ -82,7 +77,6 @@ module.exports = {
       });
   },
 
-
   listGlobalFields: () => {
     return GlobalFields.find()
       .then((fields) => {
@@ -98,7 +92,6 @@ module.exports = {
         throw err;
       });
   },
-
 
   editCountryRestrictions: () => {
     return CountryRestrictions.findById()
@@ -129,7 +122,7 @@ module.exports = {
       });
   },
   editRestriction: async (args) => {
-    console.log(args)
+    console.log(args);
     return CountryRestrictions.findOneAndUpdate(
       { _id: args._id },
       args.restrictionInput,
@@ -148,7 +141,7 @@ module.exports = {
       });
   },
   editGlobalField: async (args) => {
-    console.log(args)
+    console.log(args);
     return GlobalFields.findOneAndUpdate(
       { _id: args._id },
       args.globalFieldInput,

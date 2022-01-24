@@ -1,9 +1,9 @@
+const config = require("config");
 const client = require("twilio")(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  config.get("TWILIO_ACCOUNT_SID"),
+  config.get("TWILIO_AUTH_TOKEN")
 );
 module.exports = async () => {
-  
   // let response = await client.chat.credentials
   //   .create({
   //     apiKey: process.env.TWILIO_API_KEY,
@@ -13,7 +13,7 @@ module.exports = async () => {
   //   })
   //   .then((credentials) => console.log("credentials", credentials));
   client.chat
-    .services(process.env.TWILIO_CHAT_SERVICE_SID)
+    .services(config.get("TWILIO_CHAT_SERVICE_SID"))
     .update({
       "notifications.NewMessage.enabled": true,
       "notifications.NewMessage.sound": "default",

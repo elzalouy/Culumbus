@@ -2,12 +2,12 @@ require("dotenv").config();
 const Twilio = require("twilio");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const config = require("config");
 const User = require("../../models/user");
 const ForgetCodes = require("../../models/forgetCodes");
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const sid = process.env.TWILIO_CHAT_SERVICE_SID;
+const accountSid = config.get("TWILIO_ACCOUNT_SID");
+const authToken = config.get("TWILIO_AUTH_TOKEN");
+const sid = config.get("TWILIO_CHAT_SERVICE_SID");
 const client = require("twilio")(accountSid, authToken);
 
 const crypto = require("crypto");
@@ -74,7 +74,7 @@ module.exports = {
             .then((pass) => {
               console.log("service" + client.conversations.services);
               return client.chat
-                .services(process.env.TWILIO_CHAT_SERVICE_SID)
+                .services(config.get("TWILIO_CHAT_SERVICE_SID"))
                 .users.create({
                   identity: args.userInput.mobileNumber,
                   friendlyName: args.userInput.name,
@@ -267,7 +267,7 @@ module.exports = {
               if (!user) {
                 if (args.UserInputApple.email) {
                   return client.chat
-                    .services(process.env.TWILIO_CHAT_SERVICE_SID)
+                    .services(config.get("TWILIO_CHAT_SERVICE_SID"))
                     .users.create({
                       identity: args.UserInputApple.socialID,
                       friendlyName: args.UserInputApple.name,

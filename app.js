@@ -21,7 +21,10 @@ let multer = require("multer");
 let upload = multer();
 var fs = require("fs");
 const InitializePushNotificaitonTwilio = require("./services/Twilio");
-const Route = require("./startup/Config/Route");
+const Route = require("./startup/Route");
+const Config = require("./startup/config");
+const Logging = require("./startup/logging");
+const config = require("config");
 const FCM = require("./services/FCM");
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -37,9 +40,11 @@ const FCM = require("./services/FCM");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+Config();
+Logging();
+Route(app);
 InitializePushNotificaitonTwilio(app);
 FCM.initialize();
-// Route(app);
 app.use(morgan("tiny"));
 app.use(isAuth);
 app.use("/files", express.static("files"));
@@ -61,17 +66,17 @@ app.get("/check", (req, res) => {
 app.get("/token/:identity", (req, res) => {
   const identity = req.params.identity;
   const token = new AccessToken(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_API_KEY,
-    process.env.TWILIO_API_SECRET
+    config.get("TWILIO_ACCOUNT_SID"),
+    config.get("TWILIO_API_KEY"),
+    config.get("TWILIO_API_SECRET")
   );
 
   token.identity = identity;
   console.log("identity", identity);
   token.addGrant(
     new ChatGrant({
-      serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
-      pushCredentialSid: process.env.FCM_CREDENTIALS_SID,
+      serviceSid: config.get("TWILIO_CHAT_SERVICE_SID"),
+      pushCredentialSid: config.get("FCM_CREDENTIALS_SID"),
     })
   );
   res.send({

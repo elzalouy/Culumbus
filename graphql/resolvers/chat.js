@@ -2,9 +2,10 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 
 const User = require("../../models/user");
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const sid = process.env.TWILIO_CHAT_SERVICE_SID;
+const config = require("config");
+const accountSid = config.get("TWILIO_ACCOUNT_SID");
+const authToken = config.get("TWILIO_AUTH_TOKEN");
+const sid = config.get("TWILIO_CHAT_SERVICE_SID");
 const client = require("twilio")(accountSid, authToken);
 const admin = require("firebase-admin");
 const user = require("../../models/user");
