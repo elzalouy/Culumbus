@@ -119,7 +119,7 @@ mongoose
   )
   .then(() => {
     console.log("Server running...");
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
     //--
     User.findOne({ mobileNumber: "AdminCulumbus" })
       .then((user) => {
