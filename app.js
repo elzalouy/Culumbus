@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 InitializePushNotificaitonTwilio(app);
 FCM.initialize();
-Route(app);
+// Route(app);
 app.use(morgan("tiny"));
 app.use(isAuth);
 app.use("/files", express.static("files"));
