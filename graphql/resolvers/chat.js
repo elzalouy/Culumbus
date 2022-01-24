@@ -181,7 +181,6 @@ module.exports = {
         throw new Error("channel not found");
       }
     } catch (error) {
-      console.log(error);
       return { result: false };
     }
   },
