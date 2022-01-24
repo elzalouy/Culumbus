@@ -113,10 +113,10 @@ app.delete("/delete/:image", function (req, res) {
 });
 
 //&authSource=admin&replicaSet=culumbus-db&tls=true&tlsCAFile=./dbcert.crtc
-// "mongodb://localhost:27017/culumbusNew",
+// `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
 mongoose
-  .connect(
-    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+.connect(
+    "mongodb://localhost:27017/culumbusNew",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

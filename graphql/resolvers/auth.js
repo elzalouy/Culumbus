@@ -59,20 +59,17 @@ module.exports = {
       });
   },
   register: (args) => {
-    console.log("hiii");
     return User.findOne({
       mobileNumber: args.userInput.mobileNumber,
       email: args.userInput.email,
     })
       .then((user) => {
         if (user) {
-          console.log(user);
           throw new Error("User already exists.");
         } else {
           return bcrypt
             .hash(args.userInput.password, 12)
             .then((pass) => {
-              console.log("service" + client.conversations.services);
               return client.chat
                 .services(config.get("TWILIO_CHAT_SERVICE_SID"))
                 .users.create({
@@ -171,9 +168,7 @@ module.exports = {
   },
 
   login: async ({ mobileNumber, password }) => {
-    console.log("helo");
     const user = await User.findOne({ mobileNumber: mobileNumber });
-    console.log(user, "loggedin user");
     if (!user) {
       throw new Error("User does not exist!");
     }
@@ -438,7 +433,7 @@ module.exports = {
     });
     if (user) {
       user.FCM = args.FCM;
-      await user.save();
+      let result = await user.save();
       return { result: true };
     }
   },

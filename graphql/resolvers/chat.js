@@ -147,6 +147,7 @@ module.exports = {
   setNotification: async (args) => {
     try {
       const User = await user.findOne({ mobileNumber: args.mobileNumber });
+      console.log(User);
       if (User) {
         let result = await admin.messaging().sendMulticast({
           notification: {
@@ -169,6 +170,7 @@ module.exports = {
       const User = await user.findOne({
         mobileNumber: "AdminCulumbus",
       });
+      console.log(User);
       if (User) {
         let result = await admin.messaging().sendMulticast({
           notification: {
