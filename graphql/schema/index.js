@@ -247,7 +247,7 @@ module.exports = buildSchema(`
             setNotification(text:String!,imageUrl:String!,title:String!,mobileNumber:String!):Notification
             setAdminNotification(text:String!,imageUrl:String!,title:String!):Notification
             setAdminFcm(FCM:String) : Notification
-            setUserFcm(FCM:String,mobileNumber:String): Notification
+            setUserFcm(FCM:String,email:String): Notification
         }
         schema {
             query: RootQuery

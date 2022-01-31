@@ -26,14 +26,6 @@ const forgetCodes = require("../../models/forgetCodes");
 //     },
 //   });
 //let transporter =nodemailer.createTransport('smtps://CulumbusTest@gmail.com:12345678Culumbus@smtp.gmail.com');
-
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "CulumbusApp@gmail.com",
-    pass: "o#123456789",
-  },
-});
 // const AppleAuth = require('apple-auth');
 // const appleAuth = new AppleAuth({
 //     client_id: "org.o-project.Culumbus", // eg: my.unique.bundle.id.iMessageClone
@@ -87,7 +79,7 @@ module.exports = {
                     chatID: args.userInput.mobileNumber,
                     role: "user",
                     startedChat: false,
-                    FCM: args.userInput.FCM,
+                    FCM: "0",
                   });
                   return user.save().then((result) => {
                     const token = jwt.sign(
@@ -202,7 +194,6 @@ module.exports = {
                 process.env.SECRET_KEY,
                 { expiresIn: "1y" }
               );
-
               return { token: token, user: user };
             } else {
               return client.conversations.users
@@ -336,14 +327,25 @@ module.exports = {
       return newCode
         .save()
         .then(async (result) => {
+          console.log(user);
+          // var transporter = nodemailer.createTransport({
+          //   service: "gmail",
+          //   auth: {
+          //     user: "culumbusapp@gmail.com",
+          //     pass: "glyifhtawqyifhrf",
+          //   },
+          // });
+          const transporter = nodemailer.createTransport(
+            `smtps://culumbusapp@gmail.com:glyifhtawqyifhrf@smtp.gmail.com`
+          );
+          // pass: "o#123456789",
           var mailOptions = {
-            from: '"culumbustest" <culumbustest@gmail.com>', // sender address
+            from: "culumbusapp@gmail.com", // sender address
             to: user.email, // list of receivers
             subject: "Reset Password", // Subject line
             // text: 'Hello world ?',
             html: `<p>  A password reset was requested for your account and your password reset code is <b>${code}.</b></p>`, // html body
           };
-
           transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
               throw new Error(error);
@@ -429,8 +431,9 @@ module.exports = {
   },
   setUserFcm: async (args) => {
     const user = await User.findOne({
-      mobileNumber: args.mobileNumber,
+      email: args.email,
     });
+    console.log("args is", args);
     if (user) {
       user.FCM = args.FCM;
       let result = await user.save();

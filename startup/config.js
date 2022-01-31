@@ -1,6 +1,8 @@
 const config = require("config");
 const winston = require("winston");
+const nodemailer = require("nodemailer");
 module.exports = function () {
+  
   //Configuration
   if (
     !config.has("TWILIO_ACCOUNT_SID") ||
