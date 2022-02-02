@@ -15,6 +15,7 @@ const axios = require("axios");
 const { nanoid } = require("nanoid");
 const nodemailer = require("nodemailer");
 const forgetCodes = require("../../models/forgetCodes");
+const mongoose = require("mongoose");
 
 // let transporter = nodemailer.createTransport({
 //     host: "smtp.ethereal.email",
@@ -108,7 +109,6 @@ module.exports = {
   },
 
   editProfile: (args) => {
-    console.log(args, "update");
     return User.findOneAndUpdate({ _id: args._id }, args.userInput, {
       upsert: true,
       new: true,
@@ -121,22 +121,28 @@ module.exports = {
         throw err;
       });
   },
-  deleteAccount: (args) => {
-    return User.findByIdAndDelete(args._id)
-      .then(({ doc }) => {
-        // return client.conversations.users(user.chat).remove().then(res => {
-        return { message: "Account deleted successfully!" };
-        // }).catch(err=>{
-        //     console.log(err);
-        //     throw err;
-        // })
-      })
-      .catch((err) => {
-        console.log(err);
-        throw err;
+  deleteAccount: async (args) => {
+    console.log("delete account");
+    let user = await User.findById(args._id);
+    if (user) {
+      if (user.chat) {
+        console.log("chat");
+        // client.conversations.users(user.chatID).remove();
+        client.chat
+          .services(config.get("TWILIO_CHAT_SERVICE_SID"))
+          .users(user.chat)
+          .remove();
+      }
+      console.log("out");
+      let result = await User.findOneAndDelete({
+        mobileNumber: user.mobileNumber,
       });
+      console.log(result);
+      return { message: "account deleted successfully" };
+    } else {
+      return { message: "account deleted" };
+    }
   },
-
   createData: (args) => {
     const data = new Data({
       data: args.userInput.data,
@@ -160,6 +166,7 @@ module.exports = {
   },
 
   login: async ({ mobileNumber, password }) => {
+    console.log("login");
     const user = await User.findOne({ mobileNumber: mobileNumber });
     if (!user) {
       throw new Error("User does not exist!");
@@ -316,8 +323,11 @@ module.exports = {
 
   // },
 
-  forgetPassword: async (args, req) => {
+  forgetPassword: async (args) => {
+    console.log(args);
     const user = await User.findOne({ mobileNumber: args.mobileNumber });
+    const users = await User.find({});
+    console.log(users);
     if (user) {
       let code = Math.floor(1000 + Math.random() * 9000);
       const newCode = new ForgetCodes({
@@ -327,7 +337,6 @@ module.exports = {
       return newCode
         .save()
         .then(async (result) => {
-          console.log(user);
           // var transporter = nodemailer.createTransport({
           //   service: "gmail",
           //   auth: {
@@ -347,6 +356,7 @@ module.exports = {
             html: `<p>  A password reset was requested for your account and your password reset code is <b>${code}.</b></p>`, // html body
           };
           transporter.sendMail(mailOptions, function (error, info) {
+            console.log(error, info);
             if (error) {
               throw new Error(error);
             }
