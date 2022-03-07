@@ -36,7 +36,6 @@ const mongoose = require("mongoose");
 //   }, './keys/AuthKey_UU6FWD8K96.p8');
 //   appleAuth.accessToken("c3d9b61c82c964edeba98537e3c9b3266.0.szvs.RyMLWarklAFOcwOVjgsccg").then((response)=>{
 //     console.log(response)
-
 //   }).catch(e=>console.log(e))
 
 module.exports = {
