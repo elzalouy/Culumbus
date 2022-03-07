@@ -218,6 +218,7 @@ module.exports = {
                     chatID: facebook_id,
                     role: "user",
                     startedChat: false,
+                    FCM: "0",
                   });
                   return userx.save().then((result) => {
                     const token = jwt.sign(
@@ -280,6 +281,7 @@ module.exports = {
                         chatID: args.UserInputApple.socialID,
                         role: "user",
                         startedChat: false,
+                        FCM: "0",
                       });
                       return userx.save().then((result) => {
                         const token = jwt.sign(

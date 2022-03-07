@@ -34,103 +34,28 @@ module.exports = {
     // }
     // throw new Error('Unauthenticated.')
   },
-  startChat: (args) => {
-    return User.findOne({ mobileNumber: args.mobileNumber })
-      .then((user) => {
-        if (user && !user.startedChat) {
-          return client.conversations.conversations
-            .create({
-              chatServiceSid: sid,
-              friendlyName: user.name,
-            })
-            .then((conversation) => {
-              // return client.conversations.users
-              // .create({identity: user.mobileNumber,friendlyName:user.name})
-              // .then(newUser => {
-              return client.conversations
-                .conversations(conversation.sid)
-                .participants.create({ identity: args.mobileNumber })
-                .then((par) => {
-                  return client.conversations
-                    .conversations(conversation.sid)
-                    .participants.create({ identity: "AdminCulumbus" })
-                    .then((par2) => {
-                      user.chat = conversation.sid;
-                      user.startedChat = true;
-                      return user.save().then((result) => {
-                        return { user: result };
-                      });
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                      throw err;
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  throw err;
-                });
-            });
-
-          //     }).catch(err => {
-          //         console.log(err);
-          //         throw err;
-          //     });
-        } else {
-          if (!user) {
-            throw new Error("User not found.");
-          } else {
-            throw new Error("User already started a chat.");
-          }
+  startChat: async (args) => {
+    try {
+      let User = await user.findOne({ mobileNumber: args.mobileNumber });
+      if (!User) throw new Error("User not found");
+      else {
+        if (User && !user.startedChat) {
+          User.startedChat = true;
+          await User.save().then((result) => {
+            return { user: result };
+          });
         }
-      })
-      .catch((err) => {
-        console.log(err);
-        throw err;
-      });
+      }
+    } catch (error) {}
   },
   startChatSocial: (args) => {
     return User.findOne({ socialID: args.socialID })
-      .then((user) => {
+      .then(async (user) => {
         if (user && !user.startedChat) {
-          return client.conversations.conversations
-            .create({
-              chatServiceSid: sid,
-              friendlyName: user.name,
-            })
-            .then((conversation) => {
-              // return client.conversations.users
-              // .create({identity: user.mobileNumber,friendlyName:user.name})
-              // .then(newUser => {
-              return client.conversations
-                .conversations(conversation.sid)
-                .participants.create({ identity: user.chatID })
-                .then((par) => {
-                  return client.conversations
-                    .conversations(conversation.sid)
-                    .participants.create({ identity: "AdminCulumbus" })
-                    .then(({}) => {
-                      user.chat = conversation.sid;
-                      user.startedChat = true;
-                      return user.save().then((result) => {
-                        return { user: result };
-                      });
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                      throw err;
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  throw err;
-                });
-            });
-
-          //     }).catch(err => {
-          //         console.log(err);
-          //         throw err;
-          //     });
+          User.startedChat = true;
+          await User.save().then((result) => {
+            return { user: result };
+          });
         } else {
           if (!user) {
             throw new Error("User not found.");
